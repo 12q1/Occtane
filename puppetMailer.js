@@ -1,5 +1,7 @@
 const puppeteer = require('puppeteer');
 
+const interval = 300000 //change this if you want default interval is 5 min (300000ms)
+
 const run = () => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -14,11 +16,12 @@ const run = () => {
                         text: item.innerText,
                     });
                 });
-                let cleanText = results[2].text.replace(/\n/g, " ").toLowerCase()
-                if(cleanText.includes("out of stock")){ //Todo check dutch string?
-                    return "Occulus Rift S is still out of stock"
+                const cleanText = results[2].text.replace(/\n/g, " ").toLowerCase()
+                const currTime = new Date()
+                if (cleanText.includes("out of stock")) { //Todo check dutch string?
+                    return `Occulus Rift S is still out of stock (${currTime.getHours()}:${currTime.getMinutes()})`
                 } else {
-                    return "Occulus Rift is in stock!"
+                    return `Occulus Rift S might be in stock! (${currTime.getHours()}:${currTime.getMinutes()})`
                     //need to send notification here
                 }
             })
@@ -31,4 +34,11 @@ const run = () => {
 }
 //Bastardized version of https://www.toptal.com/puppeteer/headless-browser-puppeteer-tutorial by Nick Chikovani
 
-run().then(console.log).catch(console.error);
+setInterval(
+    () => {
+        run()
+            .then(console.log)
+            .catch(console.error)
+    },
+    interval
+)
