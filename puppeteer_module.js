@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
+const mailer = require('./nodemailer_module.js')
 
-const interval = 300000 //change this if you want default interval is 5 min (300000ms)
+const interval = 30000 //change this if you want default interval is 5 min (300000ms)
 
 const run = () => {
     return new Promise(async (resolve, reject) => {
@@ -37,7 +38,12 @@ const run = () => {
 setInterval(
     () => {
         run()
-            .then(console.log)
+            .then((res) => {
+                console.log(res)
+                if (res.includes('in stock!')) {
+                    mailer()
+                }
+            })
             .catch(console.error)
     },
     interval
